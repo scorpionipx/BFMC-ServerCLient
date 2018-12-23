@@ -67,9 +67,9 @@ class BFMC:
 
         while self.connection.listening:
             incoming_package = self.connection.__get_package_from_client__()
-            LOGGER.info(incoming_package)
+            # LOGGER.info(incoming_package)
             decoded_package = incoming_package.decode('utf-8')
-            LOGGER.info("{}".format(decoded_package))
+            # LOGGER.info("{}".format(decoded_package))
 
             if 'stop_listening' in decoded_package:
                 self.connection.stop_listening()
@@ -102,7 +102,7 @@ class BFMC:
             LOGGER.info(err)
             pass
 
-        LOGGER.info("CMD_ID: {}".format(cmd_id))
-        LOGGER.info("DATA: {}".format(data))
+        # LOGGER.info("CMD_ID: {}".format(cmd_id))
+        # LOGGER.info("DATA: {}".format(data))
 
 
