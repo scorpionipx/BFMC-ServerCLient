@@ -74,6 +74,6 @@ if __name__ == '__main__':
         port=8888,
         rc_device="Controller (XBOX 360 For Windows)",
     )
-    # rc.connection.connect_to_host()
+    rc.connection.connect_to_host()
     sleep(1)
     rc.manual_control()

@@ -7,15 +7,7 @@ from time import sleep
 from bfmc.utils.connection_utils import *
 from bfmc.utils.host import Host
 
-JOYSTICK_X_AXIS = 0
-JOYSTICK_Y_AXIS = 3
-JOYSTICK_HEADLIGHTS_BUTTON = 6
-JOYSTICK_CAMERA_ROTATION_CCW_BUTTON = 8
-JOYSTICK_CAMERA_ROTATION_CW_BUTTON = 9
-
-NOB_TO_N = {0: 0, 1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3, 7: 3, 8: 3}
-
-LOGGER = logging.getLogger('crawler')
+LOGGER = logging.getLogger('bfmc')
 LOGGER.setLevel(logging.INFO)
 
 
@@ -28,13 +20,13 @@ class BFMC:
     def __init__(self, ip=None, port=DEFAULT_PORT, manual_control=False):
         """Constructor
         """
-        LOGGER.debug("Initializing Crawler...")
+        LOGGER.debug("Initializing BFMC...")
         self.lights_on = False
         print("ip: {}".format(ip))
         self.connection = Host(ip=ip, port=port)
 
         self.__listening__ = False
-        LOGGER.debug("Crawler initialized!")
+        LOGGER.debug("BFMC initialized!")
 
     def connect_with_client(self):
         """connect_with_client
@@ -55,6 +47,7 @@ class BFMC:
             Listen to incoming ethernet packages and execute commands.
         :return:
         """
+        LOGGER.info("Listening to commands...")
         listen_thread = threading.Thread(target=self.__listen__)
         listen_thread.start()
 
@@ -74,14 +67,10 @@ class BFMC:
 
         while self.connection.listening:
             incoming_package = self.connection.__get_package_from_client__()
-            # LOGGER.info(incoming_package)
+            LOGGER.info(incoming_package)
             decoded_package = incoming_package.decode('utf-8')
             LOGGER.info("{}".format(decoded_package))
 
-            # if 'spi' in decoded_package:
-            #     self.driver.send_spi_data([1, 50, 50, 50, 50, 50])
-            # self.connection.send_package(decoded_package)
-            #
             if 'stop_listening' in decoded_package:
                 self.connection.stop_listening()
 
