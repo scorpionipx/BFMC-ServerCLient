@@ -104,7 +104,7 @@ class Client:
 
 
 if __name__ == '__main__':
-    c = Client(host='192.168.0.103', port=8888)
+    c = Client(host='192.168.100.9', port=8888)
     c.connect_to_host()
     while 1:
         x = input()

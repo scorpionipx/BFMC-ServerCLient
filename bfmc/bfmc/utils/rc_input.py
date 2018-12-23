@@ -106,7 +106,7 @@ class RemoteControl:
         button_pressed = [False] * number_of_buttons
 
         while True:
-            pygame.event.pump()
+            self.__update_rc__()
 
             for button_index in range(number_of_buttons):
                 if self.joystick.get_button(button_index):
@@ -120,6 +120,13 @@ class RemoteControl:
                 LOGGER.info("AXIS {}: {}".format(axis_index, axis))
 
             sleep(.25)
+
+    def __update_rc__(self):
+        """
+
+        :return:
+        """
+        pygame.event.pump()
 
 
 if __name__ == '__main__':

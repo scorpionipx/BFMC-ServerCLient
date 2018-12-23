@@ -1,6 +1,6 @@
-STEERING_AXIS = -1
-POWER_AXIS = -1
-BRAKE_BUTTON = -1
+STEERING_AXIS = 0
+POWER_AXIS = 3
+BRAKE_BUTTON = 4
 
 
 def load_rc_configuration(rc_device=None):
@@ -13,6 +13,7 @@ def load_rc_configuration(rc_device=None):
         return False
 
     if rc_device == "Controller (XBOX 360 For Windows)":
+        global STEERING_AXIS, POWER_AXIS, BRAKE_BUTTON
         STEERING_AXIS = 0
         POWER_AXIS = 3
         BRAKE_BUTTON = 4

@@ -82,12 +82,12 @@ class BFMC:
             #     self.driver.send_spi_data([1, 50, 50, 50, 50, 50])
             # self.connection.send_package(decoded_package)
             #
-            # if 'stop_listening' in decoded_package:
-            #     self.connection.stop_listening()
-            #
-            # if '$i' in decoded_package:
-            #     if '$d' in decoded_package:
-            #         self.decode_command(decoded_package)
+            if 'stop_listening' in decoded_package:
+                self.connection.stop_listening()
+
+            if '$i' in decoded_package:
+                if '$d' in decoded_package:
+                    self.decode_command(decoded_package)
 
     def decode_command(self, package):
         """decode_command
@@ -101,14 +101,13 @@ class BFMC:
 
         try:
             cmd_id = int(cmd_id)
-            if cmd_id == 50:
-                spi_data = []
-                for char in data:
-                    spi_data.append(ord(char))
-
-                # LOGGER.info("SPI DATA RECEIVED: {}, type {}".format(spi_data, type(spi_data)))
-                # for spi_d in spi_data:
-                # LOGGER.info("DATA: {}".format(spi_d))
+            if cmd_id == 13:
+                LOGGER.info("STOP")
+                # stop
+            elif cmd_id == 10:
+                power = float(data.split()[0])
+                steering = float(data.split()[1])
+                LOGGER.info("MOVE({}, {})".format(power, steering))
 
         except Exception as err:
             LOGGER.info(err)
