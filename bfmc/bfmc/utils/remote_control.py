@@ -45,7 +45,7 @@ class RC:
             steering = int(self.device.joystick.get_axis(STEERING_AXIS) * 100) / 4.3
 
             if steering < -23:
-                steering = 23
+                steering = -23
             if steering > 23:
                 steering = 23
 
