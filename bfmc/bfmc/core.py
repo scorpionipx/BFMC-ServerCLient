@@ -7,6 +7,9 @@ from time import sleep
 from bfmc.utils.connection_utils import *
 from bfmc.utils.host import Host
 
+from bfmc.utils.serial_handler import SerialHandler
+from bfmc.utils.save_encoder import SaveEncoder
+
 LOGGER = logging.getLogger('bfmc')
 LOGGER.setLevel(logging.INFO)
 
@@ -27,6 +30,27 @@ class BFMC:
 
         self.__listening__ = False
         LOGGER.debug("BFMC initialized!")
+
+        self.serial_handler = SerialHandler()
+        self.serial_handler.startReadThread()
+
+        self.e = SaveEncoder("Encoder.csv")
+        self.e.open()
+
+        self.ev1 = threading.Event()
+        self.ev2 = threading.Event()
+        self.serial_handler.readThread.addWaiter("MCTL", self.ev1, self.e.save)
+        self.serial_handler.readThread.addWaiter("BRAK", self.ev1, self.e.save)
+        self.serial_handler.readThread.addWaiter("ENPB", self.ev2, self.e.save)
+
+        sent = self.serial_handler.sendEncoderPublisher()
+        if sent:
+            isConfirmed = self.ev1.wait(timeout=1.0)
+            if (isConfirmed):
+                print("Deactivate encoder was confirmed!")
+        else:
+            raise ConnectionError('Response', 'Response was not received!')
+        sleep(1.0)
 
     def connect_with_client(self):
         """connect_with_client
@@ -97,6 +121,14 @@ class BFMC:
                 power = float(data.split()[0])
                 steering = float(data.split()[1])
                 LOGGER.info("MOVE({}, {})".format(power, steering))
+
+                sent = self.serial_handler.sendMove(power, steering)
+                if sent:
+                    isConfirmed = self.ev1.wait(timeout=3.0)
+                    if not isConfirmed:
+                        LOGGER.info("Error getting confirmation via USART")
+                else:
+                    LOGGER.info("Error sending command via USART")
 
         except Exception as err:
             LOGGER.info(err)
