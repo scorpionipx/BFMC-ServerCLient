@@ -18,6 +18,7 @@ LOST_CONNECTION_PACKAGE = ""
 
 def get_local_machine_ip_addresses():
     """__get_local_machine_ip_addresses__
+
         Fetch a list of local's machine IP addresses.
     :return: list of IP addresses
     :rtype: list of str

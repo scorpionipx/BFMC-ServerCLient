@@ -12,6 +12,7 @@ LOGGER.setLevel(logging.INFO)
 
 class Host:
     """Host
+    
         Class used to handle Crawler's server application.
     """
     def __init__(self, ip, port):
@@ -35,6 +36,7 @@ class Host:
 
     def start_server(self):
         """start_server
+
             Start Crawler's server.
         :return: starting server result
         :rtype: bool
@@ -67,6 +69,7 @@ class Host:
 
     def stop_server(self):
         """stop_server
+
             Stop Crawler's server application
         :return: stopping server result
         :rtype: bool
@@ -86,6 +89,7 @@ class Host:
 
     def __get_package_from_client__(self):
         """__get_package_from_client__
+
             Get a package from client.
         :return: package
         :rtype: bytearray
@@ -95,6 +99,7 @@ class Host:
 
     def echo(self):
         """echo
+
             Run server in echo mode.
         :return: None
         """
@@ -108,7 +113,8 @@ class Host:
         package_income_thread.start()
 
     def string_to_bytes(self, _string, encoding=None):
-        """
+        """string_to_bytes
+
             Method converts string type to bytes, using specified encoding.
         Conversion is required for socket's data transfer protocol: string type is not supported.
         :param _string: string to be converted
@@ -120,7 +126,8 @@ class Host:
         return bytes(_string, encoding)
 
     def send_package(self, package):
-        """
+        """send_package
+
             Sends a package to the server.
         :param package: package to be sent
         :return: True if ok, error occurred otherwise
@@ -136,6 +143,7 @@ class Host:
 
     def __echo__(self):
         """__echo__
+
             Thread echo.
         :return: None
         """
@@ -164,6 +172,7 @@ class Host:
 
     def stop_echo(self):
         """echo
+
             Stop echo mode.
         :return: None
         """
@@ -172,6 +181,7 @@ class Host:
 
     def stop_listening(self):
         """stop_listening
+
             Stop listening to incoming packages.
         :return: None
         """
@@ -179,6 +189,7 @@ class Host:
 
     def connect_with_client(self):
         """connect_with_client
+
             Connects with a requesting client.
         :return: None
         """

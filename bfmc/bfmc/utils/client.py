@@ -9,11 +9,13 @@ LOGGER.setLevel(logging.INFO)
 
 class Client:
     """Client
+
         Class used to handle internet connection on the crawler's controller as client(master).
     """
 
     def __init__(self, host, port=DEFAULT_PORT):
-        """
+        """Constructor
+
             Constructor
         :param host: remote host's name or ip to connect to as string
                      example: '192.168.100.15'
@@ -39,7 +41,8 @@ class Client:
             LOGGER.warning(error)
 
     def string_to_bytes(self, _string, encoding=None):
-        """
+        """string_to_bytes
+
             Method converts string type to bytes, using specified encoding.
         Conversion is required for socket's data transfer protocol: string type is not supported.
         :param _string: string to be converted
@@ -51,7 +54,8 @@ class Client:
         return bytes(_string, encoding)
 
     def connect_to_host(self):
-        """
+        """connect_to_host
+
             Method establishes connection to the host.
         :return: None
         """
@@ -60,7 +64,8 @@ class Client:
         LOGGER.debug("Connected to {}!".format(self.host))
 
     def send_package(self, package):
-        """
+        """send_package
+
             Sends a package to the server.
         :param package: package to be sent
         :return: True if ok, error occurred otherwise
@@ -76,6 +81,7 @@ class Client:
 
     def get_response(self):
         """get_response
+
             Get server's response.
         :return: None or server's response
         """
@@ -88,6 +94,7 @@ class Client:
 
     def send_package_and_get_response(self, package):
         """send_package_and_get_response
+
             Method sends a package to the server and awaits a response.
         :return: None or server's response
         """
