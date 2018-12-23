@@ -12,7 +12,7 @@ logger = logging.getLogger('bfmc')
 
 log_formatter = logging.Formatter('%(message)s')
 log_file_name = 'crawler_log_{}.txt'.format(strftime("%Y_%m_%d_%H_%M_%S", gmtime()))
-log_file = os.path.join(os.path.dirname(__file__), app_data_path, log_file_name)
+log_file = os.path.join(app_data_path, log_file_name)
 
 file_output = logging.FileHandler(log_file)
 file_output.setFormatter(log_formatter)
