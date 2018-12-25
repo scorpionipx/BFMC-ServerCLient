@@ -198,7 +198,7 @@ class Host:
         timeout_counter = 0
         client_is_valid = False
 
-        LOGGER.info("Waiting for connection request...")
+        LOGGER.info("Waiting for connection request... (timeout: {} seconds)".format(timeout / 100))
         while not client_is_valid:
 
             # establish a connection
