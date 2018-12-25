@@ -194,7 +194,7 @@ class Host:
             Connects with a requesting client.
         :return: None
         """
-        timeout = 1000
+        timeout = 100
         timeout_counter = 0
         client_is_valid = False
 
