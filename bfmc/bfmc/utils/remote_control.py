@@ -35,13 +35,14 @@ class RC:
         :return:
         """
 
+        power_limit = 75
         idle_counter = 0
 
         while True:
             self.device.__update_rc__()
 
             brake_button_pressed = int(self.device.joystick.get_button(BRAKE_BUTTON))
-            power = -int(self.device.joystick.get_axis(POWER_AXIS) * 100)
+            power = -int(self.device.joystick.get_axis(POWER_AXIS) * power_limit)
             steering = int(self.device.joystick.get_axis(STEERING_AXIS) * 100) / 4.3
 
             if steering < -23:
@@ -49,17 +50,18 @@ class RC:
             if steering > 23:
                 steering = 23
 
-            if power < -100:
-                power = -100
-            if power > 100:
-                power = 100
+            if power < -power_limit:
+                power = -power_limit
+            if power > power_limit:
+                power = power_limit
 
-            LOGGER.info("B: {} P: {} S: {}".format(brake_button_pressed, power, steering))
+            # LOGGER.info("B: {} P: {} S: {}".format(brake_button_pressed, power, steering))
+            LOGGER.info("P: {} S: {}".format(power, steering))
 
             if steering == 0 and power == 0 and brake_button_pressed == 0:
                 idle_counter += 1
                 if idle_counter > 5:
-                    sleep(.05)
+                    sleep(.025)
                     continue
             else:
                 idle_counter = 0
@@ -70,7 +72,7 @@ class RC:
                 continue
 
             rc.connection.send_package("$i10$d{} {}".format(power, steering))
-            sleep(.05)
+            sleep(.025)
 
 
 if __name__ == '__main__':

@@ -115,8 +115,15 @@ class BFMC:
         try:
             cmd_id = int(cmd_id)
             if cmd_id == 13:
-                LOGGER.info("STOP")
-                # stop
+                sent = self.serial_handler.sendBrake(0.0)
+                if sent:
+                    isConfirmed = self.ev1.wait(timeout=1.0)
+                    if (isConfirmed):
+                        LOGGER.info("Braking was confirmed!")
+                    else:
+                        LOGGER.error('Response', 'Response was not received!')
+                else:
+                    LOGGER.info("Sending problem")
             elif cmd_id == 10:
                 power = float(data.split()[0])
                 steering = float(data.split()[1])
