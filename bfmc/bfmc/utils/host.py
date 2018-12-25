@@ -216,13 +216,17 @@ class Host:
                 self.__client__.close()
                 self.__client__ = None
 
-            sleep(.01)
             timeout_counter += 1
+
+            LOGGER.info("{}".format(timeout_counter))
+
             if timeout_counter > timeout:
                 LOGGER.info("Client connection timeout!")
                 self.stop_listening()
                 self.stop_server()
                 break
+
+            sleep(.01)
 
 
 if __name__ == '__main__':
