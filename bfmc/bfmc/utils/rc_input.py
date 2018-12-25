@@ -117,9 +117,10 @@ class RemoteControl:
 
             for axis_index in range(number_of_axis):
                 axis = int(self.joystick.get_axis(axis_index) * 100)
-                LOGGER.info("AXIS {}: {}".format(axis_index, axis))
+                if axis != 0:
+                    LOGGER.info("AXIS {}: {}".format(axis_index, axis))
 
-            sleep(.25)
+            sleep(.05)
 
     def __update_rc__(self):
         """

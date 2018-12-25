@@ -8,7 +8,7 @@ from time import sleep
 
 from bfmc.utils.client import Client
 from bfmc.utils.rc_input import RemoteControl
-from bfmc.utils.rc_utils import BRAKE_BUTTON, POWER_AXIS, STEERING_AXIS
+from bfmc.utils.rc_utils import BRAKE_BUTTON, POWER_AXIS, STEERING_AXIS, START_BUTTON
 
 LOGGER = logging.getLogger('bfmc')
 LOGGER.setLevel(logging.INFO)
@@ -36,19 +36,26 @@ class RC:
         """
 
         power_limit = 75
+        steering_limit = 23
         idle_counter = 0
 
         while True:
             self.device.__update_rc__()
 
             brake_button_pressed = int(self.device.joystick.get_button(BRAKE_BUTTON))
+            start_button_pressed = int(self.device.joystick.get_button(START_BUTTON))
             power = -int(self.device.joystick.get_axis(POWER_AXIS) * power_limit)
-            steering = int(self.device.joystick.get_axis(STEERING_AXIS) * 100) / 4.3
+            steering = int(self.device.joystick.get_axis(STEERING_AXIS) * steering_limit)
 
-            if steering < -23:
-                steering = -23
-            if steering > 23:
-                steering = 23
+            if start_button_pressed:
+                rc.connection.send_package("stop_listening".format(power, steering))
+                LOGGER.info("Remote control terminated!")
+                break
+
+            if steering < -steering_limit:
+                steering = -steering_limit
+            if steering > steering_limit:
+                steering = steering_limit
 
             if power < -power_limit:
                 power = -power_limit
@@ -56,7 +63,7 @@ class RC:
                 power = power_limit
 
             # LOGGER.info("B: {} P: {} S: {}".format(brake_button_pressed, power, steering))
-            LOGGER.info("P: {} S: {}".format(power, steering))
+            # LOGGER.info("P: {} S: {}".format(power, steering))
 
             if steering == 0 and power == 0 and brake_button_pressed == 0:
                 idle_counter += 1

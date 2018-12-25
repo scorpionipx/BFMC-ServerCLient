@@ -97,6 +97,8 @@ class BFMC:
 
             if 'stop_listening' in decoded_package:
                 self.connection.stop_listening()
+                sleep(1)
+                self.listen()
 
             if '$i' in decoded_package:
                 if '$d' in decoded_package:

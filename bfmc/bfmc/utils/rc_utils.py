@@ -1,6 +1,7 @@
 STEERING_AXIS = 0
 POWER_AXIS = 3
 BRAKE_BUTTON = 4
+START_BUTTON = 7
 
 
 def load_rc_configuration(rc_device=None):
