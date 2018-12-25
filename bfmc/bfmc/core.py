@@ -26,7 +26,9 @@ class BFMC:
         LOGGER.debug("Initializing BFMC...")
         self.lights_on = False
         print("ip: {}".format(ip))
-        self.connection = Host(ip=ip, port=port)
+        self.__ip__ = ip
+        self.__port__ = port
+        self.connection = Host(ip=self.__ip__, port=self.__port__)
 
         self.__listening__ = False
         LOGGER.debug("BFMC initialized!")
@@ -97,6 +99,9 @@ class BFMC:
 
             if 'stop_listening' in decoded_package:
                 self.connection.stop_listening()
+                self.connection.stop_server()
+                sleep(1)
+                self.connection = Host(ip=self.__ip__, port=self.__port__)
                 sleep(1)
                 self.listen()
 
