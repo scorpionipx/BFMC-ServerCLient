@@ -2,6 +2,7 @@ import logging
 import threading
 import socket as py_socket
 
+from time import sleep
 
 from bfmc.utils.connection_utils import *
 
@@ -193,6 +194,8 @@ class Host:
             Connects with a requesting client.
         :return: None
         """
+        timeout = 10000
+        timeout_counter = 0
         client_is_valid = False
 
         LOGGER.info("Waiting for connection request...")
@@ -212,6 +215,14 @@ class Host:
                 self.__client__.shutdown(py_socket.SHUT_RDWR)
                 self.__client__.close()
                 self.__client__ = None
+
+            sleep(.01)
+            timeout_counter += 1
+            if timeout_counter > timeout:
+                LOGGER.info("Client connection timeout!")
+                self.stop_listening()
+                self.stop_server()
+                break
 
 
 if __name__ == '__main__':
