@@ -194,11 +194,9 @@ class Host:
             Connects with a requesting client.
         :return: None
         """
-        timeout = 100
-        timeout_counter = 0
         client_is_valid = False
 
-        LOGGER.info("Waiting for connection request... (timeout: {} seconds)".format(timeout / 100))
+        LOGGER.info("Waiting for connection request...")
         while not client_is_valid:
 
             # establish a connection
@@ -215,18 +213,6 @@ class Host:
                 self.__client__.shutdown(py_socket.SHUT_RDWR)
                 self.__client__.close()
                 self.__client__ = None
-
-            timeout_counter += 1
-
-            LOGGER.info("{}".format(timeout_counter))
-
-            if timeout_counter > timeout:
-                LOGGER.info("Client connection timeout!")
-                self.stop_listening()
-                self.stop_server()
-                break
-
-            sleep(.01)
 
 
 if __name__ == '__main__':
