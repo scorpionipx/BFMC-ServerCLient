@@ -47,6 +47,7 @@ class RC:
 
         self.lights_change_allowed = True
         self.turning_lights_change_allowed = True
+        self.special_cmd_allowed = True
 
     def unlock_lights_change(self):
         """
@@ -79,6 +80,22 @@ class RC:
         """
         sleep(delay)
         self.turning_lights_change_allowed = True
+
+    def unlock_special_cmd(self):
+        """unlock_turning_lights_change
+
+        :return:
+        """
+        unlock_thread = threading.Thread(target=self.__unlock_special_cmd_thread__)
+        unlock_thread.start()
+
+    def __unlock_special_cmd_thread__(self, delay=1):
+        """__unlock_special_cmd_thread__
+
+        :return:
+        """
+        sleep(delay)
+        self.special_cmd_allowed = True
 
     def manual_control(self):
         """
@@ -123,13 +140,16 @@ class RC:
             special_cmd_button_pressed = int(self.device.joystick.get_button(SPECIAL_CMD_BUTTON))
 
             if special_cmd_button_pressed:
-                LOGGER.info('Special CMD!')
-                udp_frame = '$i50$d'
-                spi_data = build_spi_command(cmd_id=1, data=[13])
-                for spi_data_value in spi_data:
-                    udp_frame += chr(spi_data_value)
-                self.connection.send_package(udp_frame)
-                sleep(.0512)
+                if self.special_cmd_allowed:
+                    LOGGER.info('Special CMD!')
+                    udp_frame = '$i50$d'
+                    spi_data = build_spi_command(cmd_id=1, data=[13])
+                    for spi_data_value in spi_data:
+                        udp_frame += chr(spi_data_value)
+                    self.connection.send_package(udp_frame)
+                    sleep(.0512)
+                    self.special_cmd_allowed = False
+                    self.unlock_special_cmd()
 
             if lights_button_pressed:
                 if self.lights_change_allowed:

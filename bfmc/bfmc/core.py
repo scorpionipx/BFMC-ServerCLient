@@ -157,7 +157,7 @@ class BFMC:
                 spi_data = []
                 for char in data:
                     spi_data.append(ord(char))
-                LOGGER.info('Sending SPI data: {}'.format(spi_data))
+                LOGGER.info('CMD1: Sending SPI data: {}'.format(spi_data))
                 self.driver.send_spi_data(spi_data)
                 sleep(.001)
                 LOGGER.info('Expecting SPI data...')
