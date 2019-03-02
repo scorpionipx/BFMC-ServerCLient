@@ -150,7 +150,7 @@ class BFMC:
                 spi_data = []
                 for char in data:
                     spi_data.append(ord(char))
-
+                LOGGER.info('ASending SPI data: {}'.format(spi_data))
                 self.driver.send_spi_data(spi_data)
 
         except Exception as err:

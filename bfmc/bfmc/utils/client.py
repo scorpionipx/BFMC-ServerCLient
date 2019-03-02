@@ -72,6 +72,7 @@ class Client:
         """
         try:
             package = self.string_to_bytes(package)
+            LOGGER.info('PACKAGE: {}'.format(package))
             self.socket.send(package)
             return True
         except Exception as err:
