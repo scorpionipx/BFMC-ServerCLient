@@ -10,6 +10,8 @@ from bfmc.utils.host import Host
 from bfmc.utils.serial_handler import SerialHandler
 from bfmc.utils.save_encoder import SaveEncoder
 
+from bfmc.utils.driver.core import BFMCDriverBoardSTM
+
 LOGGER = logging.getLogger('bfmc')
 LOGGER.setLevel(logging.INFO)
 
@@ -20,7 +22,7 @@ class BFMC:
         Class used to handle BFMC remote controlled device.
     """
 
-    def __init__(self, ip=None, port=DEFAULT_PORT, manual_control=False):
+    def __init__(self, ip=None, port=DEFAULT_PORT):
         """Constructor
         """
         LOGGER.debug("Initializing BFMC...")
@@ -31,7 +33,8 @@ class BFMC:
         self.connection = Host(ip=self.__ip__, port=self.__port__)
 
         self.__listening__ = False
-        LOGGER.debug("BFMC initialized!")
+
+        self.driver = BFMCDriverBoardSTM()
 
         self.serial_handler = SerialHandler()
         self.serial_handler.startReadThread()
@@ -47,12 +50,12 @@ class BFMC:
 
         sent = self.serial_handler.sendEncoderPublisher()
         if sent:
-            isConfirmed = self.ev1.wait(timeout=1.0)
-            if (isConfirmed):
+            confirmed = self.ev1.wait(timeout=1.0)
+            if confirmed:
                 print("Deactivate encoder was confirmed!")
         else:
             raise ConnectionError('Response', 'Response was not received!')
-        sleep(1.0)
+        LOGGER.debug("BFMC initialized!")
 
     def connect_with_client(self):
         """connect_with_client
@@ -124,8 +127,8 @@ class BFMC:
             if cmd_id == 13:
                 sent = self.serial_handler.sendBrake(0.0)
                 if sent:
-                    isConfirmed = self.ev1.wait(timeout=1.0)
-                    if (isConfirmed):
+                    confirmed = self.ev1.wait(timeout=1.0)
+                    if confirmed:
                         LOGGER.info("Braking was confirmed!")
                     else:
                         LOGGER.error('Response', 'Response was not received!')
@@ -138,11 +141,17 @@ class BFMC:
 
                 sent = self.serial_handler.sendMove(power, steering)
                 if sent:
-                    isConfirmed = self.ev1.wait(timeout=3.0)
-                    if not isConfirmed:
+                    confirmed = self.ev1.wait(timeout=3.0)
+                    if not confirmed:
                         LOGGER.info("Error getting confirmation via USART")
                 else:
                     LOGGER.info("Error sending command via USART")
+            elif cmd_id == 50:
+                spi_data = []
+                for char in data:
+                    spi_data.append(ord(char))
+
+                self.driver.send_spi_data(spi_data)
 
         except Exception as err:
             LOGGER.info(err)

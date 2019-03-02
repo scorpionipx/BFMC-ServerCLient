@@ -1,3 +1,4 @@
 bfmc/.idea/
 bfmc/bfmc/utils/logs/
 *.pyc
+bfmc/bfmc/logs/
