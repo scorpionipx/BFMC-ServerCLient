@@ -142,14 +142,15 @@ class RC:
             if special_cmd_button_pressed:
                 if self.special_cmd_allowed:
                     LOGGER.info('Special CMD!')
-                    udp_frame = '$i50$d'
-                    spi_data = build_spi_command(cmd_id=1, data=[13])
-                    for spi_data_value in spi_data:
+                    udp_frame = '$i1$d'
+                    _spi_data = build_spi_command(cmd_id=1, data=[13])
+                    for spi_data_value in _spi_data:
                         udp_frame += chr(spi_data_value)
                     self.connection.send_package(udp_frame)
                     sleep(.0512)
                     self.special_cmd_allowed = False
                     self.unlock_special_cmd()
+                    LOGGER.info('Special CMD done!')
 
             if lights_button_pressed:
                 if self.lights_change_allowed:
@@ -255,7 +256,7 @@ class RC:
 if __name__ == '__main__':
     rc = RC(
         # ip='192.168.100.9',
-        ip='192.168.0.106',
+        ip='192.168.0.107',
         port=8888,
         rc_device="Controller (XBOX 360 For Windows)",
     )
