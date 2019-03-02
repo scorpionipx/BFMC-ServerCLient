@@ -8,6 +8,8 @@ TURN_LEFT_SIGNAL_BUTTON = 2
 TURN_RIGHT_SIGNAL_BUTTON = 1
 HAZARD_LIGHTS_BUTTON = 0
 
+SPECIAL_CMD_BUTTON = 6
+
 
 def load_rc_configuration(rc_device=None):
     """load_rc_configuration

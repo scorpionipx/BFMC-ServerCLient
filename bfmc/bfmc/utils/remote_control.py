@@ -6,7 +6,7 @@ from time import sleep
 from bfmc.utils.client import Client
 from bfmc.utils.rc_input import RemoteControl
 from bfmc.utils.rc_utils import BRAKE_BUTTON, POWER_AXIS, STEERING_AXIS, START_BUTTON, TURN_LEFT_SIGNAL_BUTTON, \
-    TURN_RIGHT_SIGNAL_BUTTON, HAZARD_LIGHTS_BUTTON, LIGHTS_BUTTON
+    TURN_RIGHT_SIGNAL_BUTTON, HAZARD_LIGHTS_BUTTON, LIGHTS_BUTTON, SPECIAL_CMD_BUTTON
 from bfmc.utils.spi import build_spi_command
 
 LOGGER = logging.getLogger('bfmc')
@@ -120,6 +120,16 @@ class RC:
             turn_left_signal_button_pressed = int(self.device.joystick.get_button(TURN_LEFT_SIGNAL_BUTTON))
             turn_right_signal_button_pressed = int(self.device.joystick.get_button(TURN_RIGHT_SIGNAL_BUTTON))
             hazard_lights_button_pressed = int(self.device.joystick.get_button(HAZARD_LIGHTS_BUTTON))
+            special_cmd_button_pressed = int(self.device.joystick.get_button(SPECIAL_CMD_BUTTON))
+
+            if special_cmd_button_pressed:
+                LOGGER.info('Special CMD!')
+                udp_frame = '$i50$d'
+                spi_data = build_spi_command(cmd_id=1, data=[13])
+                for spi_data_value in spi_data:
+                    udp_frame += chr(spi_data_value)
+                self.connection.send_package(udp_frame)
+                sleep(.0512)
 
             if lights_button_pressed:
                 if self.lights_change_allowed:

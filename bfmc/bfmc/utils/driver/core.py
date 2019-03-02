@@ -39,6 +39,21 @@ class BFMCDriverBoardSTM:
         # LOGGER.info("Sending SPI {}".format(len(data)))
         self.SPI.xfer(data)
 
+    def get_spi_data(self, buffer_size):
+        """get_spi_data
+
+            Get data over SPI module.
+        :param buffer_size: number of bytes to be read
+        :type buffer_size: int
+        :return: data received
+        :rtype: list
+        """
+        data = []
+        for data_index in range(buffer_size):
+            data.append(self.SPI.readbytes(1))
+
+        return data
+
     def send_spi_command(self, cmd_id, data):
         """send_spi_command
 

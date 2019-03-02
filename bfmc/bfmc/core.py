@@ -150,8 +150,19 @@ class BFMC:
                 spi_data = []
                 for char in data:
                     spi_data.append(ord(char))
-                LOGGER.info('ASending SPI data: {}'.format(spi_data))
+                LOGGER.info('Sending SPI data: {}'.format(spi_data))
                 self.driver.send_spi_data(spi_data)
+
+            elif cmd_id == 1:
+                spi_data = []
+                for char in data:
+                    spi_data.append(ord(char))
+                LOGGER.info('Sending SPI data: {}'.format(spi_data))
+                self.driver.send_spi_data(spi_data)
+                sleep(.001)
+                LOGGER.info('Expecting SPI data...')
+                received_data = self.driver.get_spi_data(buffer_size=1)
+                LOGGER.info('Received SPI data: {}'.format(received_data))
 
         except Exception as err:
             LOGGER.info(err)
