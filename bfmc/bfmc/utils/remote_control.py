@@ -34,9 +34,13 @@ class RC:
         :param port:
         :param rc_device:
         """
-        self.connection = Client(ip, port)
         self.device = RemoteControl()
-        self.device.init_rc_device(rc_device)
+        self.valid = self.device.init_rc_device(rc_device)
+        if not self.valid:
+            LOGGER.info('Remote control aborted!')
+            return
+
+        self.connection = Client(ip, port)
 
         self.lights_state = LIGHTS_STATE_OFF
         self.turning_signal_request = TURNING_SIGNAL_REQUEST_OFF
@@ -87,11 +91,19 @@ class RC:
         steering_limit = 23
         idle_counter = 0
 
-        spi_data = build_spi_command(cmd_id=5, data=[LIGHTS_STATE_RESET])
-        udp_frame = '$i50$d'
-        for spi_data_value in spi_data:
-            udp_frame += chr(spi_data_value)
-        self.connection.send_package(udp_frame)
+        for i in range(5):
+            spi_data = build_spi_command(cmd_id=5, data=[LIGHTS_STATE_HIGH_BEAM])
+            udp_frame = '$i50$d'
+            for spi_data_value in spi_data:
+                udp_frame += chr(spi_data_value)
+            self.connection.send_package(udp_frame)
+            sleep(.0512)
+            spi_data = build_spi_command(cmd_id=5, data=[LIGHTS_STATE_OFF])
+            udp_frame = '$i50$d'
+            for spi_data_value in spi_data:
+                udp_frame += chr(spi_data_value)
+            self.connection.send_package(udp_frame)
+            sleep(.0512)
 
         sleep(.5)
 
@@ -112,7 +124,7 @@ class RC:
             if lights_button_pressed:
                 if self.lights_change_allowed:
                     self.lights_state += 1
-                    self.lights_state %= 4
+                    self.lights_state %= 3
                     spi_data = build_spi_command(cmd_id=5, data=[self.lights_state])
                     self.lights_change_allowed = False
                     self.unlock_lights_change()
@@ -121,24 +133,30 @@ class RC:
                 if self.turning_lights_change_allowed:
                     if self.turning_signal_request == TURNING_SIGNAL_REQUEST_LEFT:
                         spi_data = build_spi_command(cmd_id=4, data=[TURNING_SIGNAL_REQUEST_OFF])
+                        self.turning_signal_request = TURNING_SIGNAL_REQUEST_OFF
                     else:
                         spi_data = build_spi_command(cmd_id=4, data=[TURNING_SIGNAL_REQUEST_LEFT])
+                        self.turning_signal_request = TURNING_SIGNAL_REQUEST_LEFT
                     self.turning_lights_change_allowed = False
                     self.unlock_turning_lights_change()
             elif turn_right_signal_button_pressed:
                 if self.turning_lights_change_allowed:
                     if self.turning_signal_request == TURNING_SIGNAL_REQUEST_RIGHT:
                         spi_data = build_spi_command(cmd_id=4, data=[TURNING_SIGNAL_REQUEST_OFF])
+                        self.turning_signal_request = TURNING_SIGNAL_REQUEST_OFF
                     else:
                         spi_data = build_spi_command(cmd_id=4, data=[TURNING_SIGNAL_REQUEST_RIGHT])
+                        self.turning_signal_request = TURNING_SIGNAL_REQUEST_RIGHT
                     self.turning_lights_change_allowed = False
                     self.unlock_turning_lights_change()
             elif hazard_lights_button_pressed:
                 if self.turning_lights_change_allowed:
                     if self.turning_signal_request == TURNING_SIGNAL_REQUEST_HAZARD:
                         spi_data = build_spi_command(cmd_id=4, data=[TURNING_SIGNAL_REQUEST_OFF])
+                        self.turning_signal_request = TURNING_SIGNAL_REQUEST_OFF
                     else:
                         spi_data = build_spi_command(cmd_id=4, data=[TURNING_SIGNAL_REQUEST_HAZARD])
+                        self.turning_signal_request = TURNING_SIGNAL_REQUEST_HAZARD
                     self.turning_lights_change_allowed = False
                     self.unlock_turning_lights_change()
             else:
@@ -154,11 +172,19 @@ class RC:
             steering = int(self.device.joystick.get_axis(STEERING_AXIS) * steering_limit)
 
             if start_button_pressed:
-                spi_data = build_spi_command(cmd_id=5, data=[LIGHTS_STATE_RESET])
-                udp_frame = '$i50$d'
-                for spi_data_value in spi_data:
-                    udp_frame += chr(spi_data_value)
-                self.connection.send_package(udp_frame)
+                for i in range(5):
+                    spi_data = build_spi_command(cmd_id=5, data=[LIGHTS_STATE_HIGH_BEAM])
+                    udp_frame = '$i50$d'
+                    for spi_data_value in spi_data:
+                        udp_frame += chr(spi_data_value)
+                    self.connection.send_package(udp_frame)
+                    sleep(.0512)
+                    spi_data = build_spi_command(cmd_id=5, data=[LIGHTS_STATE_OFF])
+                    udp_frame = '$i50$d'
+                    for spi_data_value in spi_data:
+                        udp_frame += chr(spi_data_value)
+                    self.connection.send_package(udp_frame)
+                    sleep(.0512)
 
                 sleep(.01)
 
@@ -203,6 +229,7 @@ if __name__ == '__main__':
         port=8888,
         rc_device="Controller (XBOX 360 For Windows)",
     )
-    rc.connection.connect_to_host()
-    sleep(1)
-    rc.manual_control()
+    if rc.valid:
+        rc.connection.connect_to_host()
+        sleep(1)
+        rc.manual_control()
