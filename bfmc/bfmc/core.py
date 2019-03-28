@@ -179,6 +179,7 @@ class BFMC:
 
         :return:
         """
+        LOGGER.info('Parking...')
         parking_speed = 17
         parking_angle = 22
 
@@ -200,6 +201,7 @@ class BFMC:
                 LOGGER.error('Response', 'Response was not received!')
         else:
             LOGGER.info("Sending problem")
+        LOGGER.info('Parked!')
 
 
 
