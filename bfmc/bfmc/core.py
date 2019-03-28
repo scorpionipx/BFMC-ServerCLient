@@ -223,7 +223,7 @@ class BFMC:
         self.move(-parking_speed, parking_angle)
         sleep(reverse_time)
         self.move(-parking_speed, -parking_angle)
-        sleep(reverse_time)
+        sleep(reverse_time / 3)
         self.brake()
 
         LOGGER.info('Parked!')
