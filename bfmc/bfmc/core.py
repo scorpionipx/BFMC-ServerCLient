@@ -47,6 +47,14 @@ class BFMC:
         self.serial_handler.readThread.addWaiter("MCTL", self.ev1, self.e.save)
         self.serial_handler.readThread.addWaiter("BRAK", self.ev1, self.e.save)
         self.serial_handler.readThread.addWaiter("ENPB", self.ev2, self.e.save)
+
+        sent = self.serial_handler.sendEncoderPublisher()
+        if sent:
+            confirmed = self.ev1.wait(timeout=1.0)
+            if confirmed:
+                print("Deactivate encoder was confirmed!")
+        else:
+            raise ConnectionError('Response', 'Response was not received!')
         LOGGER.debug("BFMC initialized!")
 
     def connect_with_client(self):
@@ -129,7 +137,6 @@ class BFMC:
             elif cmd_id == 10:
                 power = float(data.split()[0])
                 steering = float(data.split()[1])
-                power /= 100
                 LOGGER.info("MOVE({}, {})".format(power, steering))
 
                 sent = self.serial_handler.sendMove(power, steering)
