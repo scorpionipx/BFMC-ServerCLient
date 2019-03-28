@@ -155,7 +155,7 @@ class BFMC:
                 LOGGER.info("MOVE({}, {})".format(power, steering))
 
                 power /= 100
-                sent = self.serial_handler.sendMove(power, steering)
+                sent = self.serial_handler.sendMove(.33, steering)
                 if sent:
                     confirmed = self.ev1.wait(timeout=3.0)
                     if not confirmed:
