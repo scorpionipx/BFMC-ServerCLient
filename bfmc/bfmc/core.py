@@ -57,6 +57,21 @@ class BFMC:
             raise ConnectionError('Response', 'Response was not received!')
         LOGGER.debug("BFMC initialized!")
 
+        ev1 = threading.Event()
+        self.serial_handler.readThread.addWaiter("PIDA", ev1, print)
+        sent = self.serial_handler.sendPidActivation(True)
+        if sent:
+            confirmed = ev1.wait(timeout=1.0)
+            if confirmed:
+                print("PID activated!")
+            else:
+                raise ConnectionError('Response', 'Response was not received!')
+
+        else:
+            print("Sending problem")
+
+        self.serial_handler.readThread.deleteWaiter("PIDA", ev1)
+
     def connect_with_client(self):
         """connect_with_client
             Connect with a client.

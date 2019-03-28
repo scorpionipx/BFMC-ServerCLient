@@ -256,7 +256,7 @@ class RC:
 if __name__ == '__main__':
     rc = RC(
         # ip='192.168.100.9',
-        ip='192.168.0.107',
+        ip='192.168.0.102',
         port=8888,
         rc_device="Controller (XBOX 360 For Windows)",
     )
