@@ -174,6 +174,41 @@ class BFMC:
         # LOGGER.info("CMD_ID: {}".format(cmd_id))
         # LOGGER.info("DATA: {}".format(data))
 
+    def move(self, speed, angle, timeout=1):
+        """move
+
+        :param speed:
+        :param angle:
+        :param timeout:
+        :return:
+        """
+        sent = self.serial_handler.sendMove(speed, angle)
+        if sent:
+            confirmed = self.ev1.wait(timeout=timeout)
+            if not confirmed:
+                LOGGER.info("Error getting confirmation via USART")
+                return False
+        else:
+            LOGGER.info("Error sending command via USART")
+            return False
+        return True
+
+    def brake(self, timeout=1):
+        """brake
+
+        :param timeout:
+        :return:
+        """
+        sent = self.serial_handler.sendBrake(0.0)
+        if sent:
+            confirmed = self.ev1.wait(timeout=timeout)
+            if confirmed:
+                LOGGER.info("Braking was confirmed!")
+            else:
+                LOGGER.error('Response', 'Response was not received!')
+        else:
+            LOGGER.info("Sending problem")
+
     def parking_maneuver(self):
         """
 
@@ -184,23 +219,13 @@ class BFMC:
         parking_angle = 22
 
         reverse_time = 3
-        sent = self.serial_handler.sendMove(-parking_speed, parking_angle)
-        if sent:
-            confirmed = self.ev1.wait(timeout=3.0)
-            if not confirmed:
-                LOGGER.info("Error getting confirmation via USART")
-        else:
-            LOGGER.info("Error sending command via USART")
+
+        self.move(-parking_speed, parking_angle)
         sleep(reverse_time)
-        sent = self.serial_handler.sendBrake(0.0)
-        if sent:
-            confirmed = self.ev1.wait(timeout=1.0)
-            if confirmed:
-                LOGGER.info("Braking was confirmed!")
-            else:
-                LOGGER.error('Response', 'Response was not received!')
-        else:
-            LOGGER.info("Sending problem")
+        self.move(-parking_speed, -parking_angle)
+        sleep(reverse_time)
+        self.brake()
+
         LOGGER.info('Parked!')
 
 
