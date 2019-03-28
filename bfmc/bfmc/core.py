@@ -153,6 +153,9 @@ class BFMC:
                 LOGGER.info('Sending SPI data: {}'.format(spi_data))
                 self.driver.send_spi_data(spi_data)
 
+            elif cmd_id == 11:
+                self.parking_maneuver()
+
             elif cmd_id == 1:
                 spi_data = []
                 for char in data:
@@ -170,5 +173,36 @@ class BFMC:
 
         # LOGGER.info("CMD_ID: {}".format(cmd_id))
         # LOGGER.info("DATA: {}".format(data))
+
+    def parking_maneuver(self):
+        """
+
+        :return:
+        """
+        parking_speed = 17
+        parking_angle = 22
+
+        reverse_time = 3
+        sent = self.serial_handler.sendMove(-parking_speed, parking_angle)
+        if sent:
+            confirmed = self.ev1.wait(timeout=3.0)
+            if not confirmed:
+                LOGGER.info("Error getting confirmation via USART")
+        else:
+            LOGGER.info("Error sending command via USART")
+        sleep(reverse_time)
+        sent = self.serial_handler.sendBrake(0.0)
+        if sent:
+            confirmed = self.ev1.wait(timeout=1.0)
+            if confirmed:
+                LOGGER.info("Braking was confirmed!")
+            else:
+                LOGGER.error('Response', 'Response was not received!')
+        else:
+            LOGGER.info("Sending problem")
+
+
+
+
 
 
