@@ -57,20 +57,20 @@ class BFMC:
         #     raise ConnectionError('Response', 'Response was not received!')
         LOGGER.debug("BFMC initialized!")
 
-        ev1 = threading.Event()
-        self.serial_handler.readThread.addWaiter("PIDS", ev1)
-        # (kp,ki,kd,tf)=(2.8184,7.0832,0.28036,0)
-        (kp, ki, kd, tf) = (0.93143, 2.8, 0.0, 0.0001)
-        sent = self.serial_handler.sendPidValue(kp, ki, kd, tf)
-        if sent:
-            confirmed = ev1.wait(timeout=1.0)
-            if confirmed:
-                print("Response was received!")
-            else:
-                raise ConnectionError('Response', 'Response was not received!')
-        else:
-            print("Sending problem")
-        self.serial_handler.readThread.deleteWaiter("PIDS", ev1)
+        # ev1 = threading.Event()
+        # self.serial_handler.readThread.addWaiter("PIDS", ev1)
+        # # (kp,ki,kd,tf)=(2.8184,7.0832,0.28036,0)
+        # (kp, ki, kd, tf) = (0.93143, 2.8, 0.0, 0.0001)
+        # sent = self.serial_handler.sendPidValue(kp, ki, kd, tf)
+        # if sent:
+        #     confirmed = ev1.wait(timeout=1.0)
+        #     if confirmed:
+        #         print("Response was received!")
+        #     else:
+        #         raise ConnectionError('Response', 'Response was not received!')
+        # else:
+        #     print("Sending problem")
+        # self.serial_handler.readThread.deleteWaiter("PIDS", ev1)
 
         ev1 = threading.Event()
         self.serial_handler.readThread.addWaiter("PIDA", ev1, print)
