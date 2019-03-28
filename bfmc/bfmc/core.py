@@ -152,10 +152,10 @@ class BFMC:
             elif cmd_id == 10:
                 power = float(data.split()[0])
                 steering = float(data.split()[1])
+                power /= 100
                 LOGGER.info("MOVE({}, {})".format(power, steering))
 
-                power /= 100
-                sent = self.serial_handler.sendMove(.33, steering)
+                sent = self.serial_handler.sendMove(power, steering)
                 if sent:
                     confirmed = self.ev1.wait(timeout=3.0)
                     if not confirmed:
