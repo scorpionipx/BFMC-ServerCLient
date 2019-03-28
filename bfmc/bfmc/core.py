@@ -180,7 +180,7 @@ class BFMC:
         :return:
         """
         LOGGER.info('Parking...')
-        parking_speed = 17
+        parking_speed = 20
         parking_angle = 22
 
         reverse_time = 3
