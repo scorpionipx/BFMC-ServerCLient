@@ -95,22 +95,30 @@ class BFMC:
         self.connection.listening = True
 
         while self.connection.listening:
-            incoming_package = self.connection.__get_package_from_client__()
-            # LOGGER.info(incoming_package)
-            decoded_package = incoming_package.decode('utf-8')
-            # LOGGER.info("{}".format(decoded_package))
+            try:
+                incoming_package = self.connection.__get_package_from_client__()
+                # LOGGER.info(incoming_package)
+                decoded_package = incoming_package.decode('utf-8')
+                # LOGGER.info("{}".format(decoded_package))
 
-            if 'stop_listening' in decoded_package:
-                self.connection.stop_listening()
-                self.connection.stop_server()
-                sleep(1)
-                self.connection = Host(ip=self.__ip__, port=self.__port__)
-                sleep(1)
-                self.listen()
+                if 'stop_listening' in decoded_package:
+                    self.connection.stop_listening()
+                    self.connection.stop_server()
+                    sleep(1)
+                    self.connection = Host(ip=self.__ip__, port=self.__port__)
+                    sleep(1)
+                    self.listen()
 
-            if '$i' in decoded_package:
-                if '$d' in decoded_package:
-                    self.decode_command(decoded_package)
+                if '$i' in decoded_package:
+                    if '$d' in decoded_package:
+                        self.decode_command(decoded_package)
+            except Exception as err:
+                error = 'Error occurred while listening! {}'.format(err)
+                LOGGER.error(error)
+                return
+            except KeyboardInterrupt:
+                LOGGER.info('Listening interrupted by user!')
+                return
 
     def decode_command(self, package):
         """decode_command
