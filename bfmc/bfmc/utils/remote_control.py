@@ -105,7 +105,7 @@ class RC:
         LOGGER.info('Initiating remote control...')
 
         power_limit = 75
-        steering_limit = 23
+        steering_limit = 27
         idle_counter = 0
 
         for i in range(5):
