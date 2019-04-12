@@ -141,16 +141,19 @@ class RC:
 
             if special_cmd_button_pressed:
                 if self.special_cmd_allowed:
-                    LOGGER.info('Special CMD!')
-                    udp_frame = '$i1$d'
-                    _spi_data = build_spi_command(cmd_id=1, data=[13])
-                    for spi_data_value in _spi_data:
-                        udp_frame += chr(spi_data_value)
+                    # LOGGER.info('Special CMD!')
+                    # udp_frame = '$i1$d'
+                    # _spi_data = build_spi_command(cmd_id=1, data=[13])
+                    # for spi_data_value in _spi_data:
+                    #     udp_frame += chr(spi_data_value)
+                    # self.connection.send_package(udp_frame)
+                    # sleep(.0512)
+                    # self.special_cmd_allowed = False
+                    # self.unlock_special_cmd()
+                    # LOGGER.info('Special CMD done!')
+                    udp_frame = '$i11$d0'
                     self.connection.send_package(udp_frame)
-                    sleep(.0512)
-                    self.special_cmd_allowed = False
-                    self.unlock_special_cmd()
-                    LOGGER.info('Special CMD done!')
+                    sleep(.5)
 
             if lights_button_pressed:
                 if self.lights_change_allowed:
