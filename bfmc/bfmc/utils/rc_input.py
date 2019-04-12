@@ -132,5 +132,6 @@ class RemoteControl:
 
 if __name__ == '__main__':
     rc = RemoteControl()
+    # rc.test_rc("Controller (XBOX 360 For Windows)")
     rc.test_rc("Controller (XBOX 360 For Windows)")
 

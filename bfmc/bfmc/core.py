@@ -181,6 +181,9 @@ class BFMC:
                 LOGGER.info('Sending SPI data: {}'.format(spi_data))
                 self.driver.send_spi_data(spi_data)
 
+            elif cmd_id == 11:
+                self.parking_maneuver()
+
             elif cmd_id == 1:
                 spi_data = []
                 for char in data:
@@ -198,5 +201,63 @@ class BFMC:
 
         # LOGGER.info("CMD_ID: {}".format(cmd_id))
         # LOGGER.info("DATA: {}".format(data))
+
+    def move(self, speed, angle, timeout=1):
+        """move
+
+        :param speed:
+        :param angle:
+        :param timeout:
+        :return:
+        """
+        sent = self.serial_handler.sendMove(speed, angle)
+        if sent:
+            confirmed = self.ev1.wait(timeout=timeout)
+            if not confirmed:
+                LOGGER.info("Error getting confirmation via USART")
+                return False
+        else:
+            LOGGER.info("Error sending command via USART")
+            return False
+        return True
+
+    def brake(self, timeout=1):
+        """brake
+
+        :param timeout:
+        :return:
+        """
+        sent = self.serial_handler.sendBrake(0.0)
+        if sent:
+            confirmed = self.ev1.wait(timeout=timeout)
+            if confirmed:
+                LOGGER.info("Braking was confirmed!")
+            else:
+                LOGGER.error('Response', 'Response was not received!')
+        else:
+            LOGGER.info("Sending problem")
+
+    def parking_maneuver(self):
+        """
+
+        :return:
+        """
+        LOGGER.info('Parking...')
+        parking_speed = 20
+        parking_angle = 22
+
+        reverse_time = 3
+
+        self.move(-parking_speed, parking_angle)
+        sleep(reverse_time)
+        self.move(-parking_speed, -parking_angle)
+        sleep(reverse_time / 3)
+        self.brake()
+
+        LOGGER.info('Parked!')
+
+
+
+
 
 
