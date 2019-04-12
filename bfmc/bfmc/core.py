@@ -163,7 +163,7 @@ class BFMC:
                     power = -.15
                 else:
                     power = 0
-                    
+
                 steering = float(data.split()[1])
                 LOGGER.info("MOVE({}, {})".format(power, steering))
 
