@@ -1,5 +1,3 @@
-import logging
-import pygame
 import threading
 
 from time import sleep
@@ -44,6 +42,20 @@ class BFMC:
 
         self.ev1 = threading.Event()
         self.ev2 = threading.Event()
+
+        LOGGER.info('Activating PID')
+        self.serial_handler.readThread.addWaiter("PIDA", self.ev1, print)
+        sent = self.serial_handler.sendPidActivation(True)
+        if sent:
+            confirmed = self.ev1.wait(timeout=1.0)
+            if confirmed:
+                print("Response was received!")
+            else:
+                raise ConnectionError('Response', 'Response was not received!')
+        else:
+            print("Sending problem")
+            self.serial_handler.readThread.deleteWaiter("PIDA", self.ev1)
+
         self.serial_handler.readThread.addWaiter("MCTL", self.ev1, self.e.save)
         self.serial_handler.readThread.addWaiter("BRAK", self.ev1, self.e.save)
         self.serial_handler.readThread.addWaiter("ENPB", self.ev2, self.e.save)
@@ -94,23 +106,31 @@ class BFMC:
 
         self.connection.listening = True
 
-        while self.connection.listening:
-            incoming_package = self.connection.__get_package_from_client__()
-            # LOGGER.info(incoming_package)
-            decoded_package = incoming_package.decode('utf-8')
-            # LOGGER.info("{}".format(decoded_package))
+        try:
+            while self.connection.listening:
+                    incoming_package = self.connection.__get_package_from_client__()
+                    # LOGGER.info(incoming_package)
+                    decoded_package = incoming_package.decode('utf-8')
+                    # LOGGER.info("{}".format(decoded_package))
 
-            if 'stop_listening' in decoded_package:
-                self.connection.stop_listening()
-                self.connection.stop_server()
-                sleep(1)
-                self.connection = Host(ip=self.__ip__, port=self.__port__)
-                sleep(1)
-                self.listen()
+                    if 'stop_listening' in decoded_package:
+                        self.connection.stop_listening()
+                        self.connection.stop_server()
+                        sleep(1)
+                        self.connection = Host(ip=self.__ip__, port=self.__port__)
+                        sleep(1)
+                        self.listen()
 
-            if '$i' in decoded_package:
-                if '$d' in decoded_package:
-                    self.decode_command(decoded_package)
+                    if '$i' in decoded_package:
+                        if '$d' in decoded_package:
+                            self.decode_command(decoded_package)
+        except Exception as err:
+            error = 'Error occurred while listening! {}'.format(err)
+            LOGGER.error(error)
+            return
+        except KeyboardInterrupt:
+            LOGGER.info('Listening interrupted by user!')
+            return
 
     def decode_command(self, package):
         """decode_command
@@ -136,6 +156,14 @@ class BFMC:
                     LOGGER.info("Sending problem")
             elif cmd_id == 10:
                 power = float(data.split()[0])
+
+                if power > 0:
+                    power = 0.15
+                elif power < 0:
+                    power = -.15
+                else:
+                    power = 0
+
                 steering = float(data.split()[1])
                 LOGGER.info("MOVE({}, {})".format(power, steering))
 

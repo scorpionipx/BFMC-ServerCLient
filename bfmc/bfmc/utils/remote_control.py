@@ -105,7 +105,7 @@ class RC:
         LOGGER.info('Initiating remote control...')
 
         power_limit = 75
-        steering_limit = 23
+        steering_limit = 27
         idle_counter = 0
 
         for i in range(5):
@@ -259,7 +259,9 @@ class RC:
 if __name__ == '__main__':
     rc = RC(
         # ip='192.168.100.9',
-        ip='192.168.0.102',
+        # ip='192.168.0.107',
+        # ip='192.168.43.71',
+        ip='192.168.1.194',
         port=8888,
         rc_device="Controller (XBOX 360 For Windows)",
     )
