@@ -1,5 +1,3 @@
-import logging
-import pygame
 import threading
 
 from time import sleep
@@ -44,10 +42,8 @@ class BFMC:
 
         self.ev1 = threading.Event()
         self.ev2 = threading.Event()
-        self.serial_handler.readThread.addWaiter("MCTL", self.ev1, self.e.save)
-        self.serial_handler.readThread.addWaiter("BRAK", self.ev1, self.e.save)
-        self.serial_handler.readThread.addWaiter("ENPB", self.ev2, self.e.save)
 
+        LOGGER.info('Activating PID')
         self.serial_handler.readThread.addWaiter("PIDA", self.ev1, print)
         sent = self.serial_handler.sendPidActivation(True)
         if sent:
@@ -56,11 +52,13 @@ class BFMC:
                 print("Response was received!")
             else:
                 raise ConnectionError('Response', 'Response was not received!')
-
         else:
             print("Sending problem")
-
             self.serial_handler.readThread.deleteWaiter("PIDA", self.ev1)
+
+        self.serial_handler.readThread.addWaiter("MCTL", self.ev1, self.e.save)
+        self.serial_handler.readThread.addWaiter("BRAK", self.ev1, self.e.save)
+        self.serial_handler.readThread.addWaiter("ENPB", self.ev2, self.e.save)
 
         sent = self.serial_handler.sendEncoderPublisher()
         if sent:
@@ -158,12 +156,14 @@ class BFMC:
                     LOGGER.info("Sending problem")
             elif cmd_id == 10:
                 power = float(data.split()[0])
+
                 if power > 0:
                     power = 0.15
                 elif power < 0:
                     power = -.15
                 else:
                     power = 0
+                    
                 steering = float(data.split()[1])
                 LOGGER.info("MOVE({}, {})".format(power, steering))
 
