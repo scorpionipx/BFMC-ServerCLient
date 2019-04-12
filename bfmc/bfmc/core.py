@@ -13,6 +13,8 @@ from bfmc.utils.driver.core import BFMCDriverBoardSTM
 LOGGER = logging.getLogger('bfmc')
 LOGGER.setLevel(logging.INFO)
 
+CRUISE_SPEED = 0.2
+
 
 class BFMC:
     """BFMC
@@ -158,9 +160,9 @@ class BFMC:
                 power = float(data.split()[0])
 
                 if power > 0:
-                    power = 0.15
+                    power = CRUISE_SPEED
                 elif power < 0:
-                    power = -.15
+                    power = -CRUISE_SPEED
                 else:
                     power = 0
 
