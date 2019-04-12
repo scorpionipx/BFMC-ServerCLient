@@ -159,10 +159,15 @@ class BFMC:
                     LOGGER.info("Sending problem")
             elif cmd_id == 10:
                 power = float(data.split()[0])
+                if power > 0:
+                    power = 0.15
+                elif power < 0:
+                    power = -.15
+                else:
+                    power = 0
                 steering = float(data.split()[1])
                 LOGGER.info("MOVE({}, {})".format(power, steering))
 
-                power = 0.2
                 sent = self.serial_handler.sendMove(power, steering)
                 if sent:
                     confirmed = self.ev1.wait(timeout=3.0)
