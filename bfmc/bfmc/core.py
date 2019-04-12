@@ -48,11 +48,10 @@ class BFMC:
         self.serial_handler.readThread.addWaiter("BRAK", self.ev1, self.e.save)
         self.serial_handler.readThread.addWaiter("ENPB", self.ev2, self.e.save)
 
-        ev1 = threading.Event()
-        self.serial_handler.readThread.addWaiter("PIDA", ev1, print)
+        self.serial_handler.readThread.addWaiter("PIDA", self.ev1, print)
         sent = self.serial_handler.sendPidActivation(True)
         if sent:
-            confirmed = ev1.wait(timeout=1.0)
+            confirmed = self.ev1.wait(timeout=1.0)
             if confirmed:
                 print("Response was received!")
             else:
@@ -61,7 +60,7 @@ class BFMC:
         else:
             print("Sending problem")
 
-            self.serial_handler.readThread.deleteWaiter("PIDA", ev1)
+            self.serial_handler.readThread.deleteWaiter("PIDA", self.ev1)
 
         sent = self.serial_handler.sendEncoderPublisher()
         if sent:
